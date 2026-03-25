@@ -1,0 +1,137 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# FastAPI / Backend specific
+backend/__pycache__/
+backend/venv/
+backend/.env
+backend/.env.local
+
+# Package management
+pip-log.txt
+pip-delete-this-directory.txt
+pip-selfcheck.json
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# IDE and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.pydevproject
+.settings/
+*.sublime-*
+*.sublime-workspace
+
+# Frontend (если будут использовать Node.js/npm)
+frontend/node_modules/
+frontend/.env
+frontend/.env.local
+frontend/dist/
+frontend/build/
+frontend/.cache/
+frontend/.parcel-cache/
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# React / Vue / Vite specific
+frontend/.vite/
+frontend/.next/
+frontend/.nuxt/
+frontend/.output/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.swp
+*.swo
+
+# Database files (если используете)
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+logs/
+*.log
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Coverage reports
+coverage/
+*.cover
+.coverage.*
+htmlcov/
+
+# Docker (если используете)
+.dockerignore
+*.pid
+
+# Backup files
+*.bak
+*.tmp
+*.temp
+
+# Project specific
+backend/__pycache__/
+backend/.pytest_cache/
+frontend/__pycache__/  # на всякий случай, если кто-то ошибется
+
+frontend/node_modules/
+frontend/build/
+frontend/.env.development.local
+frontend/.env.production.local
+frontend/.env.test.local
+
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local

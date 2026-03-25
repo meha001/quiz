@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Викторина{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body class="page {% block body_class %}{% endblock %}">
+<header class="topbar">
+    <div class="topbar__title">Викторина</div>
+    <nav class="topbar__nav">
+        <a class="btn btn--ghost" href="/">Главная</a>
+        <a class="btn btn--ghost" href="/player">Игрок</a>
+        <a class="btn btn--ghost" href="/creator/login">Создатель</a>
+    </nav>
+</header>
+
+<main class="page-main">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <span class="footer__text">Quiz Platform · FastAPI</span>
+</footer>
+</body>
+</html>
+

@@ -1,0 +1,19 @@
+{% extends "base_simple.html" %}
+
+{% block title %}Викторина на FastAPI{% endblock %}
+
+{% block content %}
+<div class="card card--main">
+    <h1 class="title">Онлайн‑викторина</h1>
+    <p class="subtitle">Выберите, кто вы:</p>
+    <div class="buttons">
+        <a class="btn btn--primary" href="/player">Я игрок</a>
+        <a class="btn btn--secondary" href="/creator/login">Я создатель</a>
+    </div>
+    <section class="top-quizzes">
+        <h2 class="section-title">Топ викторин</h2>
+        <p class="muted">Список пока заглушка — позже подгрузим из API.</p>
+    </section>
+</div>
+{% endblock %}
+

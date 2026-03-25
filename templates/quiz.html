@@ -1,0 +1,22 @@
+{% extends "base_simple.html" %}
+
+{% block title %}Викторина — Игра{% endblock %}
+
+{% block content %}
+<div class="card card--main" id="quiz-root" data-session-id="{{ session_id }}">
+    <h1 class="title">Викторина</h1>
+    <p class="subtitle" id="quiz-progress"></p>
+
+    <div id="quiz-question-block">
+        <div id="quiz-question-text" class="section-title"></div>
+        <div id="quiz-options" class="buttons"></div>
+        <p class="muted" id="quiz-timer"></p>
+    </div>
+
+    <p class="muted" id="quiz-status"></p>
+    <button class="btn btn--secondary" id="next-btn" disabled>Далее</button>
+</div>
+
+<script src="/static/js/quiz.js"></script>
+{% endblock %}
+

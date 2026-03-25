@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Панель создателя</title>
+    <link rel="stylesheet" href="/static/css/main.css">
+</head>
+<body class="page">
+<header class="topbar">
+    <div class="topbar__title">Панель создателя</div>
+    <button class="btn btn--ghost" id="logout-btn">Выйти</button>
+</header>
+
+<main class="layout">
+    <aside class="sidebar">
+        <nav class="tabs">
+            <button class="tabs__item tabs__item--active" data-tab="questions">Вопросы</button>
+            <button class="tabs__item" data-tab="stats">Статистика</button>
+            <button class="tabs__item" data-tab="settings">Настройки</button>
+            <button class="tabs__item" data-tab="rating">Рейтинг</button>
+        </nav>
+    </aside>
+
+    <section class="content">
+        <div class="tab tab--active" id="tab-questions">
+            <h2 class="section-title">Вопросы</h2>
+            <form class="form" id="question-form">
+                <input type="hidden" name="id" id="q-id">
+                <label class="form__field">
+                    <span>Текст вопроса</span>
+                    <input type="text" id="q-text" required>
+                </label>
+                <label class="form__field">
+                    <span>Вариант 1</span>
+                    <input type="text" id="q-opt1" required>
+                </label>
+                <label class="form__field">
+                    <span>Вариант 2</span>
+                    <input type="text" id="q-opt2" required>
+                </label>
+                <label class="form__field">
+                    <span>Вариант 3 (необязательно)</span>
+                    <input type="text" id="q-opt3">
+                </label>
+                <label class="form__field">
+                    <span>Вариант 4 (необязательно)</span>
+                    <input type="text" id="q-opt4">
+                </label>
+                <label class="form__field">
+                    <span>Номер правильного ответа (0…N-1)</span>
+                    <input type="number" id="q-correct" min="0" value="0" required>
+                </label>
+                <label class="form__field">
+                    <span>Время на вопрос (сек)</span>
+                    <input type="number" id="q-time" min="3" value="30" required>
+                </label>
+                <div class="form__actions">
+                    <button class="btn btn--primary" type="submit" id="q-save-btn">Сохранить</button>
+                    <button class="btn btn--ghost" type="button" id="q-reset-btn">Очистить</button>
+                </div>
+            </form>
+            <section class="section">
+                <h3 class="section-title">Список вопросов</h3>
+                <div id="questions-table-container" class="table-wrapper"></div>
+            </section>
+        </div>
+
+        <div class="tab" id="tab-stats">
+            <h2 class="section-title">Статистика</h2>
+            <div id="stats-summary" class="section"></div>
+        </div>
+
+        <div class="tab" id="tab-settings">
+            <h2 class="section-title">Настройки викторины</h2>
+            <form class="form" id="settings-form">
+                <label class="form__field">
+                    <span>Время на вопрос по умолчанию (сек)</span>
+                    <input type="number" id="s-time" min="3" value="30" required>
+                </label>
+                <label class="form__field">
+                    <span>Количество вопросов в игре</span>
+                    <input type="number" id="s-count" min="1" value="10" required>
+                </label>
+                <label class="form__field">
+                    <span>Перемешивать вопросы</span>
+                    <select id="s-shuffle">
+                        <option value="true">Да</option>
+                        <option value="false">Нет</option>
+                    </select>
+                </label>
+                <div class="form__actions">
+                    <button class="btn btn--primary" type="submit">Сохранить настройки</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="tab" id="tab-rating">
+            <h2 class="section-title">Репутация</h2>
+            <div id="rating-block" class="section"></div>
+        </div>
+    </section>
+</main>
+
+<script src="/static/js/creator_dashboard.js"></script>
+</body>
+</html>

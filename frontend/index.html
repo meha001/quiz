@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>College Project Frontend</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="container">
+    <h1>FastAPI + Frontend Demo</h1>
+    <p class="subtitle">Проверка интеграции фронтенда с бэкендом</p>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Проверка API</h2>
+        <div class="actions">
+          <button id="healthBtn">GET /api/health</button>
+          <button id="itemsBtn">GET /api/items</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Отправка данных на бэкенд</h2>
+        <form id="echoForm">
+          <label for="message">Сообщение</label>
+          <textarea id="message" name="message" placeholder="Введите текст" required></textarea>
+
+          <button type="submit">POST /api/echo</button>
+        </form>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>Управление пользователями</h2>
+      <div class="users-grid">
+        <form id="userForm">
+          <label for="userName">Имя</label>
+          <input id="userName" name="userName" type="text" placeholder="Например, Иван" required />
+
+          <label for="userEmail">Email</label>
+          <input id="userEmail" name="userEmail" type="email" placeholder="ivan@example.com" required />
+
+          <button type="submit">Создать пользователя</button>
+        </form>
+
+        <div>
+          <div class="actions">
+            <button id="loadUsersBtn">Обновить список</button>
+          </div>
+          <ul id="usersList" class="users-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Ответ сервера</h2>
+      <div id="loading" class="loading hidden" aria-live="polite">
+        <span class="spinner"></span>
+        <span>Загрузка...</span>
+      </div>
+      <pre id="output">Нажмите кнопку или отправьте форму...</pre>
+    </section>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>

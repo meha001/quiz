@@ -1,0 +1,42 @@
+{% extends "base_simple.html" %}
+
+{% block title %}Результаты — Викторина{% endblock %}
+
+{% block content %}
+<div class="card card--medium">
+    <h1 class="title">Результаты</h1>
+    <p id="results-summary" class="section-title"></p>
+    <p id="results-extra" class="muted"></p>
+    <div class="buttons">
+        <a class="btn btn--primary" href="/player">Играть ещё</a>
+        <a class="btn btn--secondary" href="/">На главную</a>
+    </div>
+</div>
+
+<script>
+  (function () {
+    const url = new URL(window.location.href);
+    const params = url.searchParams;
+    const correct = Number(params.get("correct") || "0");
+    const total = Number(params.get("total") || "0");
+    const failed = params.get("failed") === "true";
+
+    const summary = document.getElementById("results-summary");
+    const extra = document.getElementById("results-extra");
+
+    if (summary) {
+      summary.textContent = `Вы набрали ${correct} из ${total}`;
+    }
+
+    if (extra) {
+      if (failed) {
+        extra.textContent =
+          "Игра помечена как подозрительная (слишком быстрое прохождение или много переключений вкладок). Результат не засчитан в репутацию.";
+      } else {
+        extra.textContent = "Отлично! Ваш результат засчитан в таблицу рекордов.";
+      }
+    }
+  })();
+</script>
+{% endblock %}
+
