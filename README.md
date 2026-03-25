@@ -1,5 +1,4 @@
-# College Project: FastAPI + Frontend
-
+# Quiz
 Проект подготовлен для командной работы в колледже:
 - `backend/` — API на FastAPI (Python)
 - `frontend/` — демо-интерфейс на HTML/CSS/JS для проверки API
