@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Cookie
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from .. import models
 from ..database import get_db
-from ..schemas import HighscoreOut, CreatorSummary
+from ..schemas import CreatorSummary, HighscoreOut
 
 
 router = APIRouter()
@@ -69,8 +69,6 @@ def highscores_for_creator(
 
     highscores = qs.order_by(models.Highscore.score.desc()).limit(limit).all()
     if not highscores:
-        # не считаем пустой результат ошибкой
         return []
 
     return [HighscoreOut(player_name=h.player_name, score=h.score) for h in highscores]
-

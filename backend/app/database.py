@@ -1,9 +1,10 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
 import pathlib
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
-BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
+
+BASE_DIR = pathlib.Path(__file__).resolve().parent.parent.parent
 DB_PATH = BASE_DIR / "quiz.db"
 DATABASE_URL = f"sqlite:///{DB_PATH}"
 
@@ -26,4 +27,3 @@ def get_db():
         yield db
     finally:
         db.close()
-

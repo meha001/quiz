@@ -1,14 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    Float,
-    ForeignKey,
-    Integer,
-    String,
-)
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from .database import Base
@@ -99,4 +91,3 @@ class Highscore(Base):
     session_id = Column(Integer, ForeignKey("sessions.id"), nullable=False)
 
     session = relationship("Session", back_populates="highscores")
-

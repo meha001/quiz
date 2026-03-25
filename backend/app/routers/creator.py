@@ -1,15 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, Cookie, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from .. import models
 from ..database import get_db
-from ..schemas import (
-    QuestionCreate,
-    QuestionUpdate,
-    QuestionOut,
-    QuizSettingsIn,
-    QuizSettingsOut,
-)
+from ..schemas import QuestionCreate, QuestionOut, QuestionUpdate, QuizSettingsIn, QuizSettingsOut
 
 
 router = APIRouter()
@@ -42,7 +36,6 @@ def create_question(
     creator: models.Creator = Depends(get_current_creator),
     db: Session = Depends(get_db),
 ):
-    # поддержка переменного числа вариантов (2–4), пустыми могут быть только последние
     raw_options = [data.option_1, data.option_2, data.option_3, data.option_4]
     options: list[str] = []
     for opt in raw_options:
@@ -99,7 +92,6 @@ def update_question(
     for field, value in data.dict(exclude_unset=True).items():
         setattr(question, field, value)
 
-    # пересчёт активных вариантов и валидация после обновления
     raw_options = [question.option_1, question.option_2, question.option_3, question.option_4]
     options: list[str] = []
     for opt in raw_options:
@@ -199,5 +191,3 @@ def update_settings(
         questions_per_game=settings.questions_per_game,
         shuffle_questions=settings.shuffle_questions,
     )
-
-

@@ -1,15 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Response
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from passlib.context import CryptContext
+from sqlalchemy.orm import Session
 
 from .. import models
 from ..database import get_db
-from ..schemas import CreatorRegister, CreatorLogin, CreatorPublic
+from ..schemas import CreatorLogin, CreatorPublic, CreatorRegister
 
 
 router = APIRouter()
-
-# Используем pbkdf2_sha256 вместо bcrypt, чтобы избежать ограничений по длине пароля
 pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 
 
@@ -40,7 +38,6 @@ def register_creator(data: CreatorRegister, response: Response, db: Session = De
     db.commit()
     db.refresh(user)
 
-    # Простая cookie-сессия для создателя
     response.set_cookie("creator_id", str(user.id), httponly=True, samesite="lax")
     return CreatorPublic(id=user.id, username=user.username)
 
@@ -59,4 +56,3 @@ def login_creator(data: CreatorLogin, response: Response, db: Session = Depends(
 def logout_creator(response: Response):
     response.delete_cookie("creator_id")
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-

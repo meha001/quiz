@@ -1,27 +1,76 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
-from app.routers.echo import router as echo_router
-from app.routers.health import router as health_router
-from app.routers.items import router as items_router
-from app.routers.users import router as users_router
+import pathlib
 
-app = FastAPI(
-    title=settings.app_name,
-    description="Demo FastAPI backend for frontend integration.",
-    version="1.0.0",
-)
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=settings.parsed_cors_origins(),
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+from .database import Base, engine
+from .routers import auth, creator, game, stats
 
-# Подключение модульных роутеров для более чистой архитектуры
-app.include_router(health_router)
-app.include_router(items_router)
-app.include_router(echo_router)
-app.include_router(users_router)
+
+BASE_DIR = pathlib.Path(__file__).resolve().parent.parent.parent
+
+
+def create_app() -> FastAPI:
+    app = FastAPI(title="Quiz Platform")
+
+    static_dir = BASE_DIR / "static"
+    templates_dir = BASE_DIR / "templates"
+
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+    templates = Jinja2Templates(directory=str(templates_dir))
+
+    Base.metadata.create_all(bind=engine)
+
+    app.include_router(auth.router, prefix="/auth", tags=["auth"])
+    app.include_router(creator.router, prefix="/creator/api", tags=["creator"])
+    app.include_router(game.router, prefix="/game", tags=["game"])
+    app.include_router(stats.router, prefix="/stats", tags=["stats"])
+
+    @app.get("/", response_class=HTMLResponse)
+    async def index(request: Request):
+        return templates.TemplateResponse(
+            "index.html",
+            {"request": request},
+        )
+
+    @app.get("/player", response_class=HTMLResponse)
+    async def player_page(request: Request):
+        return templates.TemplateResponse(
+            "player.html",
+            {"request": request},
+        )
+
+    @app.get("/creator/login", response_class=HTMLResponse)
+    async def creator_login_page(request: Request):
+        return templates.TemplateResponse(
+            "creator_login.html",
+            {"request": request},
+        )
+
+    @app.get("/creator/dashboard", response_class=HTMLResponse)
+    async def creator_dashboard_page(request: Request):
+        return templates.TemplateResponse(
+            "creator_dashboard.html",
+            {"request": request},
+        )
+
+    @app.get("/game/{session_id}", response_class=HTMLResponse)
+    async def game_page(request: Request, session_id: int):
+        return templates.TemplateResponse(
+            "quiz.html",
+            {"request": request, "session_id": session_id},
+        )
+
+    @app.get("/results/{session_id}", response_class=HTMLResponse)
+    async def results_page(request: Request, session_id: int):
+        return templates.TemplateResponse(
+            "results.html",
+            {"request": request, "session_id": session_id},
+        )
+
+    return app
+
+
+app = create_app()

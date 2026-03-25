@@ -24,7 +24,6 @@ def recalc_creator_stats(db: Session, creator_id: int) -> None:
         db.commit()
         return
 
-    # количество уникальных игроков
     unique_players = {s.player_name for s in sessions}
     players_passed = len(unique_players)
 
@@ -36,14 +35,11 @@ def recalc_creator_stats(db: Session, creator_id: int) -> None:
 
     avg_score = sum(scores) / len(scores) if scores else 0.0
 
-    # базовая репутация: 1 звезда за каждые 10 игроков
     base_rep = players_passed // 10
-
     bonus = 0.0
     if avg_score >= 7.0:
         bonus += 0.5
 
-    # активность за последние 7 дней
     week_ago = datetime.utcnow() - timedelta(days=7)
     active_recent = [s for s in sessions if s.started_at >= week_ago]
     if len(active_recent) >= 5:
@@ -57,4 +53,3 @@ def recalc_creator_stats(db: Session, creator_id: int) -> None:
     creator.rating = creator.reputation
 
     db.commit()
-
