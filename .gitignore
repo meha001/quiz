@@ -1,137 +1,77 @@
-# Python
+# ============================
+# Python / FastAPI
+# ============================
 __pycache__/
 *.py[cod]
-*$py.class
+*.pyd
 *.so
-.Python
-env/
+*.pyo
+
+# virtualenvs
+.venv/
 venv/
+env/
 ENV/
-env.bak/
-venv.bak/
-.python-version
 
-# FastAPI / Backend specific
-backend/__pycache__/
-backend/venv/
-backend/.env
-backend/.env.local
-/.venv
-# Package management
-pip-log.txt
-pip-delete-this-directory.txt
-pip-selfcheck.json
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Distribution / packaging
-.Python
+# packaging / builds
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
 *.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+coverage/
 
-# IDE and Editors
+# ============================
+# Environment files (secrets)
+# ============================
+.env
+.env.*
+!.env.example
+
+# ============================
+# Logs / runtime files
+# ============================
+*.log
+logs/
+*.pid
+
+# ============================
+# Databases / local state
+# ============================
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================
+# Frontend (если появится Node)
+# ============================
+node_modules/
+dist/
+build/
+.cache/
+.parcel-cache/
+.vite/
+.next/
+.nuxt/
+.output/
+
+# ============================
+# IDE / OS
+# ============================
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 .DS_Store
-.project
-.pydevproject
-.settings/
-*.sublime-*
-*.sublime-workspace
-
-# Frontend (если будут использовать Node.js/npm)
-frontend/node_modules/
-frontend/.env
-frontend/.env.local
-frontend/dist/
-frontend/build/
-frontend/.cache/
-frontend/.parcel-cache/
-frontend/*.log
-frontend/npm-debug.log*
-frontend/yarn-debug.log*
-frontend/yarn-error.log*
-
-# React / Vue / Vite specific
-frontend/.vite/
-frontend/.next/
-frontend/.nuxt/
-frontend/.output/
-
-# OS files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
-*.swp
-*.swo
+ehthumbs.db
+Desktop.ini
 
-# Database files (если используете)
-*.db
-*.sqlite
-*.sqlite3
-
-# Logs
-*.log
-logs/
-*.log
-
-# Environment variables
-.env
-.env.*
-!.env.example
-
-# Coverage reports
-coverage/
-*.cover
-.coverage.*
-htmlcov/
-
-# Docker (если используете)
-.dockerignore
-*.pid
-
-# Backup files
-*.bak
-*.tmp
-*.temp
-
-# Project specific
-backend/__pycache__/
-backend/.pytest_cache/
-frontend/__pycache__/  # на всякий случай, если кто-то ошибется
-
-frontend/node_modules/
-frontend/build/
-frontend/.env.development.local
-frontend/.env.production.local
-frontend/.env.test.local
-
-frontend/node_modules/
-frontend/dist/
-frontend/.env.local
+# Cursor project state (не коммитим)
+.cursor/
