@@ -16,7 +16,7 @@ backend/__pycache__/
 backend/venv/
 backend/.env
 backend/.env.local
-
+.venv
 # Package management
 pip-log.txt
 pip-delete-this-directory.txt
