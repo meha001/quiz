@@ -3,5 +3,4 @@ uvicorn[standard]
 python-dotenv
 pydantic-settings
 sqlalchemy
-passlib
 jinja2

@@ -1,23 +1,29 @@
-# Quiz
+# Quiz Platform (FastAPI + UI)
+
 Проект подготовлен для командной работы в колледже:
-- `backend/` — API на FastAPI (Python)
-- `frontend/` — демо-интерфейс на HTML/CSS/JS для проверки API
+- `backend/` — backend на FastAPI (Python)
+- `frontend/` — UI-файлы (Jinja2 templates + static) и отдельный demo-фронтенд для проверки API
 
 ## Структура проекта
 
 ```text
-kontrol/
+quiz/
 ├─ backend/
 │  ├─ app/
 │  │  ├─ routers/
 │  │  │  ├─ __init__.py
-│  │  │  ├─ health.py
-│  │  │  ├─ items.py
-│  │  │  ├─ echo.py
-│  │  │  └─ users.py
+│  │  │  ├─ auth.py
+│  │  │  ├─ creator.py
+│  │  │  ├─ game.py
+│  │  │  └─ stats.py
 │  │  ├─ __init__.py
 │  │  ├─ config.py
+│  │  ├─ database.py
+│  │  ├─ models.py
 │  │  ├─ schemas.py
+│  │  ├─ services/
+│  │  │  ├─ __init__.py
+│  │  │  └─ reputation.py
 │  │  └─ main.py
 │  ├─ .env.example
 │  ├─ main.py
@@ -25,9 +31,11 @@ kontrol/
 │  ├─ start.bat
 │  └─ start.sh
 ├─ frontend/
-│  ├─ index.html
-│  ├─ script.js
-│  └─ style.css
+│  ├─ templates/
+│  ├─ static/
+│  ├─ index.html          # demo-страница (проверка API)
+│  ├─ script.js           # demo-скрипт (проверка API)
+│  └─ style.css           # demo-стили (проверка API)
 └─ README.md
 ```
 
@@ -60,6 +68,12 @@ kontrol/
 - создают `.env` из `.env.example` (если нет),
 - запускают FastAPI на `127.0.0.1:8000`.
 
+Открыть в браузере:
+- UI (главная): `http://127.0.0.1:8000/`
+- UI (игрок): `http://127.0.0.1:8000/player`
+- UI (создатель): `http://127.0.0.1:8000/creator/login`
+- Swagger: `http://127.0.0.1:8000/docs`
+
 ## Ручной запуск backend
 
 ```bash
@@ -84,12 +98,14 @@ copy .env.example .env   # Windows
 uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
+UI: `http://127.0.0.1:8000/`  
 Swagger: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ## Запуск frontend
 
-- Рекомендуется Live Server (порт `5500`)
-- Или открыть `frontend/index.html` напрямую
+- UI викторины отдаётся backend’ом (FastAPI рендерит шаблоны из `frontend/templates` и раздаёт статику из `frontend/static`).
+- Дополнительно есть demo-страница для проверки API: откройте `frontend/index.html`
+  (рекомендуется через Live Server, например порт `5500`).
 
 ## Порты
 
@@ -108,39 +124,42 @@ CORS_ORIGINS=http://localhost:3000,http://localhost:5500,http://127.0.0.1:5500
 
 | Метод | URL | Описание |
 |---|---|---|
-| GET | `/api/health` | Проверка состояния API |
-| GET | `/api/items` | Список тестовых товаров |
-| POST | `/api/echo` | Эхо-ответ с валидацией входных данных |
-| GET | `/api/users` | Список пользователей |
-| POST | `/api/users` | Создать пользователя |
-| GET | `/api/users/{id}` | Получить пользователя по ID |
-| DELETE | `/api/users/{id}` | Удалить пользователя |
+| POST | `/auth/register` | Регистрация создателя |
+| POST | `/auth/login` | Вход создателя |
+| POST | `/auth/logout` | Выход создателя |
+| GET | `/stats/creators` | Список викторин (создателей) |
+| GET | `/stats/creators/{creator_id}/highscores` | Рекорды викторины |
+| GET | `/stats/creator/me/summary` | Моя статистика создателя (по cookie) |
+| GET | `/creator/api/questions` | Вопросы (создатель) |
+| POST | `/creator/api/questions` | Создать вопрос |
+| PUT | `/creator/api/questions/{question_id}` | Обновить вопрос |
+| DELETE | `/creator/api/questions/{question_id}` | Удалить вопрос |
+| GET | `/creator/api/settings` | Настройки викторины |
+| PUT | `/creator/api/settings` | Обновить настройки викторины |
+| POST | `/game/start` | Начать игру |
+| POST | `/game/{session_id}/answer` | Ответ на вопрос |
+| POST | `/game/{session_id}/tab-switch` | Регистрация переключения вкладки |
+| POST | `/game/{session_id}/finish` | Завершить игру |
 
 ## Примеры запросов
 
-### Health
+### Регистрация создателя
 ```bash
-curl http://127.0.0.1:8000/api/health
+curl -X POST http://127.0.0.1:8000/auth/register ^
+  -H "Content-Type: application/json" ^
+  -d "{\"username\":\"demo\",\"password\":\"demo1234\"}"
 ```
 
-### Items
+### Список викторин
 ```bash
-curl http://127.0.0.1:8000/api/items
+curl http://127.0.0.1:8000/stats/creators
 ```
 
-### Echo
+### Старт игры
 ```bash
-curl -X POST http://127.0.0.1:8000/api/echo \
-  -H "Content-Type: application/json" \
-  -d "{\"message\":\"Hello API\",\"timestamp\":\"2026-03-25T10:00:00Z\"}"
-```
-
-### Users CRUD
-```bash
-curl http://127.0.0.1:8000/api/users
-curl -X POST http://127.0.0.1:8000/api/users -H "Content-Type: application/json" -d "{\"name\":\"Ivan\",\"email\":\"ivan@example.com\"}"
-curl http://127.0.0.1:8000/api/users/1
-curl -X DELETE http://127.0.0.1:8000/api/users/1
+curl -X POST http://127.0.0.1:8000/game/start ^
+  -H "Content-Type: application/json" ^
+  -d "{\"player_name\":\"Ivan\",\"creator_id\":1,\"captcha_answer\":4}"
 ```
 
 ## Скриншоты интерфейса

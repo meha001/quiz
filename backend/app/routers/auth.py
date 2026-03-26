@@ -1,5 +1,9 @@
+import base64
+import hashlib
+import hmac
+import secrets
+
 from fastapi import APIRouter, Depends, HTTPException, Response, status
-from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
 from .. import models
@@ -8,15 +12,53 @@ from ..schemas import CreatorLogin, CreatorPublic, CreatorRegister
 
 
 router = APIRouter()
-pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
+
+_PBKDF2_ITERS = 210_000
+_SALT_BYTES = 16
+_DK_LEN = 32
+
+
+def _pbkdf2_hash(password: str, salt: bytes) -> bytes:
+    return hashlib.pbkdf2_hmac(
+        "sha256",
+        password.encode("utf-8"),
+        salt,
+        _PBKDF2_ITERS,
+        dklen=_DK_LEN,
+    )
 
 
 def hash_password(password: str) -> str:
-    return pwd_context.hash(password)
+    salt = secrets.token_bytes(_SALT_BYTES)
+    digest = _pbkdf2_hash(password, salt)
+    salt_b64 = base64.urlsafe_b64encode(salt).decode("ascii").rstrip("=")
+    digest_b64 = base64.urlsafe_b64encode(digest).decode("ascii").rstrip("=")
+    return f"pbkdf2_sha256${_PBKDF2_ITERS}${salt_b64}${digest_b64}"
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        scheme, iters_str, salt_b64, digest_b64 = hashed_password.split("$", 3)
+        if scheme != "pbkdf2_sha256":
+            return False
+        iters = int(iters_str)
+
+        def _b64decode_nopad(s: str) -> bytes:
+            pad = "=" * ((4 - (len(s) % 4)) % 4)
+            return base64.urlsafe_b64decode(s + pad)
+
+        salt = _b64decode_nopad(salt_b64)
+        expected = _b64decode_nopad(digest_b64)
+        actual = hashlib.pbkdf2_hmac(
+            "sha256",
+            plain_password.encode("utf-8"),
+            salt,
+            iters,
+            dklen=len(expected),
+        )
+        return hmac.compare_digest(actual, expected)
+    except Exception:
+        return False
 
 
 @router.post("/register", response_model=CreatorPublic, status_code=status.HTTP_201_CREATED)
