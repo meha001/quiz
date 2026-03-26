@@ -31,45 +31,27 @@ def create_app() -> FastAPI:
 
     @app.get("/", response_class=HTMLResponse)
     async def index(request: Request):
-        return templates.TemplateResponse(
-            "index.html",
-            {"request": request},
-        )
+        return templates.TemplateResponse(request, "index.html")
 
     @app.get("/player", response_class=HTMLResponse)
     async def player_page(request: Request):
-        return templates.TemplateResponse(
-            "player.html",
-            {"request": request},
-        )
+        return templates.TemplateResponse(request, "player.html")
 
     @app.get("/creator/login", response_class=HTMLResponse)
     async def creator_login_page(request: Request):
-        return templates.TemplateResponse(
-            "creator_login.html",
-            {"request": request},
-        )
+        return templates.TemplateResponse(request, "creator_login.html")
 
     @app.get("/creator/dashboard", response_class=HTMLResponse)
     async def creator_dashboard_page(request: Request):
-        return templates.TemplateResponse(
-            "creator_dashboard.html",
-            {"request": request},
-        )
+        return templates.TemplateResponse(request, "creator_dashboard.html")
 
     @app.get("/game/{session_id}", response_class=HTMLResponse)
     async def game_page(request: Request, session_id: int):
-        return templates.TemplateResponse(
-            "quiz.html",
-            {"request": request, "session_id": session_id},
-        )
+        return templates.TemplateResponse(request, "quiz.html", {"session_id": session_id})
 
     @app.get("/results/{session_id}", response_class=HTMLResponse)
     async def results_page(request: Request, session_id: int):
-        return templates.TemplateResponse(
-            "results.html",
-            {"request": request, "session_id": session_id},
-        )
+        return templates.TemplateResponse(request, "results.html", {"session_id": session_id})
 
     return app
 
