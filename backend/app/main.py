@@ -15,8 +15,9 @@ BASE_DIR = pathlib.Path(__file__).resolve().parent.parent.parent
 def create_app() -> FastAPI:
     app = FastAPI(title="Quiz Platform")
 
-    static_dir = BASE_DIR / "static"
-    templates_dir = BASE_DIR / "templates"
+    # Шаблоны и статика лежат в папке frontend, чтобы весь UI-содержимый был в одном месте
+    static_dir = BASE_DIR / "frontend" / "static"
+    templates_dir = BASE_DIR / "frontend" / "templates"
 
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
     templates = Jinja2Templates(directory=str(templates_dir))
