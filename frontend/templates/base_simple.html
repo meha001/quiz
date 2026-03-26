@@ -2,26 +2,37 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Викторина{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/main.css">
 </head>
 <body class="page {% block body_class %}{% endblock %}">
 <header class="topbar">
     <div class="topbar__title">Викторина</div>
-    <nav class="topbar__nav">
-        <a class="btn btn--ghost" href="/">Главная</a>
-        <a class="btn btn--ghost" href="/player">Игрок</a>
-        <a class="btn btn--ghost" href="/creator/login">Создатель</a>
-    </nav>
+    <div class="topbar__nav">
+        <nav class="topbar__nav-links">
+            <a class="btn btn--ghost" href="/">Главная</a>
+            {% if creator_logged_in %}
+                <a class="btn btn--ghost" href="/creator/dashboard">Dashboard</a>
+            {% else %}
+                <a class="btn btn--ghost" href="/player">Игрок</a>
+                <a class="btn btn--ghost" href="/creator/login">Создатель</a>
+            {% endif %}
+        </nav>
+        <div class="topbar__nav-extra">
+            {% block topbar_right %}{% endblock %}
+        </div>
+    </div>
 </header>
 
-<main class="page-main">
+<main class="page-main {% block main_class %}{% endblock %}">
     {% block content %}{% endblock %}
 </main>
 
 <footer class="footer">
     <span class="footer__text">Quiz Platform · FastAPI</span>
 </footer>
+{% block scripts %}{% endblock %}
 </body>
 </html>
 

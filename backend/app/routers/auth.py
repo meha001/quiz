@@ -96,5 +96,7 @@ def login_creator(data: CreatorLogin, response: Response, db: Session = Depends(
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 def logout_creator(response: Response):
-    response.delete_cookie("creator_id")
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    # Важно: удалить cookie на том же объекте Response, который возвращаем
+    resp = Response(status_code=status.HTTP_204_NO_CONTENT)
+    resp.delete_cookie("creator_id")
+    return resp

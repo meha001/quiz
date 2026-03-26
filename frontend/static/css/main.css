@@ -181,6 +181,15 @@ body {
     padding: 16px;
 }
 
+.page-main--top {
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.layout {
+    width: 100%;
+}
+
 .footer {
     height: 40px;
     display: flex;

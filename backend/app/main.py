@@ -1,7 +1,7 @@
 import pathlib
 
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -20,7 +20,12 @@ def create_app() -> FastAPI:
     templates_dir = BASE_DIR / "frontend" / "templates"
 
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
-    templates = Jinja2Templates(directory=str(templates_dir))
+
+    def template_context(request: Request) -> dict:
+        creator_logged_in = bool(request.cookies.get("creator_id"))
+        return {"creator_logged_in": creator_logged_in}
+
+    templates = Jinja2Templates(directory=str(templates_dir), context_processors=[template_context])
 
     Base.metadata.create_all(bind=engine)
 
@@ -52,6 +57,15 @@ def create_app() -> FastAPI:
     @app.get("/results/{session_id}", response_class=HTMLResponse)
     async def results_page(request: Request, session_id: int):
         return templates.TemplateResponse(request, "results.html", {"session_id": session_id})
+
+    # Chrome DevTools может запрашивать этот путь автоматически
+    @app.get("/.well-known/appspecific/com.chrome.devtools.json")
+    async def chrome_devtools_config():
+        return Response(status_code=204)
+
+    @app.get("/favicon.ico")
+    async def favicon():
+        return Response(status_code=204)
 
     return app
 

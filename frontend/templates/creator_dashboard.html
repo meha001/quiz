@@ -1,16 +1,13 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Панель создателя</title>
-    <link rel="stylesheet" href="/static/css/main.css">
-</head>
-<body class="page">
-<header class="topbar">
-    <div class="topbar__title">Панель создателя</div>
-    <button class="btn btn--ghost" id="logout-btn">Выйти</button>
-</header>
+{% extends "base_simple.html" %}
 
+{% block title %}Панель создателя{% endblock %}
+
+{% block main_class %}page-main--top{% endblock %}
+
+{% block topbar_right %}
+<button class="btn btn--ghost" id="logout-btn" type="button">Выйти</button>
+{% endblock %}
+{% block content %}
 <main class="layout">
     <aside class="sidebar">
         <nav class="tabs">
@@ -100,7 +97,8 @@
         </div>
     </section>
 </main>
+{% endblock %}
 
+{% block scripts %}
 <script src="/static/js/creator_dashboard.js"></script>
-</body>
-</html>
+{% endblock %}

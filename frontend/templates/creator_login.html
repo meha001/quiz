@@ -1,11 +1,8 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Создатель — Вход</title>
-    <link rel="stylesheet" href="/static/css/main.css">
-</head>
-<body class="page page--centered">
+{% extends "base_simple.html" %}
+
+{% block title %}Создатель — Вход{% endblock %}
+
+{% block content %}
 <div class="card card--medium">
     <h1 class="title">Создатель</h1>
     <form class="form" id="creator-login-form">
@@ -23,6 +20,8 @@
         </div>
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
 <script src="/static/js/creator_auth.js"></script>
-</body>
-</html>
+{% endblock %}
