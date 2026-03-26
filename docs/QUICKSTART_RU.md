@@ -4,16 +4,19 @@
 
 ### 1) Проверь требования
 
-- Python 3.10+ (у тебя используется Python 3.12)
+- Python 3.10+ 
 - Установленный `pip`
+
+- `https://www.python.org/`
 
 ### 2) Создай/активируй виртуальное окружение
 
 Выполни в PowerShell **из корня проекта** (`c:\Users\Joe\OneDrive\Desktop\kontrol`):
 
 ```powershell
+cd backend
 python -m venv venv
-.\venv\Scripts\Activate.ps1
+.venv\Scripts\activate.bat
 ```
 
 ### 3) Установи зависимости
