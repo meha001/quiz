@@ -112,6 +112,37 @@ Swagger: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 - Backend: `http://127.0.0.1:8000`
 - Frontend: любой другой локальный порт (`3000`, `5500` и т.п.)
 
+## Деплой на Vercel
+
+Проект подготовлен для запуска на Vercel как Python Serverless Function.
+
+Что уже настроено в репозитории:
+- `api/index.py` — entrypoint для Vercel (`from backend.app.main import app`)
+- `vercel.json` — роутинг всех запросов в FastAPI
+- `requirements.txt` (в корне) — зависимости для сборки на Vercel
+
+### Шаги деплоя
+
+1. Установите Vercel CLI:
+   ```bash
+   npm i -g vercel
+   ```
+2. В корне проекта выполните:
+   ```bash
+   vercel
+   ```
+3. Для продакшн-деплоя:
+   ```bash
+   vercel --prod
+   ```
+
+### Важно про базу данных
+
+Сейчас используется SQLite. На Vercel файл БД хранится во временной директории `/tmp`,
+поэтому данные **не гарантированно постоянные** между перезапусками функций.
+
+Для реального продакшна рекомендуется вынести БД во внешний сервис (PostgreSQL/Supabase/Neon).
+
 ## CORS
 
 Настраивается через переменную `CORS_ORIGINS` в `backend/.env`:

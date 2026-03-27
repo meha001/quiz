@@ -1,7 +1,6 @@
-fastapi==0.115.0
-uvicorn==0.30.0
-SQLAlchemy==2.0.36
-alembic==1.13.2
-python-multipart==0.0.17
-jinja2==3.1.4
-passlib==1.7.4
+fastapi
+uvicorn[standard]
+python-dotenv
+pydantic-settings
+sqlalchemy
+jinja2
