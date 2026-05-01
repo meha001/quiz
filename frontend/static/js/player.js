@@ -1,33 +1,33 @@
 // Логика страницы игрока: выбор викторины, анти-спам по времени и старт игры
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("player-form");
-  const creatorSelect = document.getElementById("creator-select");
+  const quizSelect = document.getElementById("quiz-select");
   const highscoresContainer = document.getElementById("highscores-container");
   if (!form) return;
 
-  // Подгружаем список викторин (создателей)
-  fetch("/stats/creators")
+  // Подгружаем список тестов
+  fetch("/stats/quizzes")
     .then((res) => res.json())
-    .then((creators) => {
-      if (!Array.isArray(creators)) return;
-      creators.forEach((c) => {
+    .then((quizzes) => {
+      if (!Array.isArray(quizzes)) return;
+      quizzes.forEach((q) => {
         const opt = document.createElement("option");
-        opt.value = c.id;
-        opt.textContent = `${c.username} — ⭐ ${c.reputation} (игроков: ${c.players_passed})`;
-        creatorSelect.appendChild(opt);
+        opt.value = q.id;
+        opt.textContent = `${q.title} (ID: ${q.id})`;
+        quizSelect.appendChild(opt);
       });
     })
     .catch(() => {
       // тихо игнорируем
     });
 
-  creatorSelect.addEventListener("change", () => {
-    const id = creatorSelect.value;
+  quizSelect.addEventListener("change", () => {
+    const id = quizSelect.value;
     if (!id) {
       highscoresContainer.innerHTML = '<p class="muted">Выберите викторину, чтобы увидеть рекорды.</p>';
       return;
     }
-    fetch(`/stats/creators/${id}/highscores?period=all&limit=10`)
+    fetch(`/stats/quizzes/${id}/highscores?period=all&limit=10`)
       .then((res) => res.json())
       .then((items) => {
         if (!Array.isArray(items) || items.length === 0) {
@@ -56,15 +56,15 @@ document.addEventListener("DOMContentLoaded", () => {
     e.preventDefault();
     const formData = new FormData(form);
     const playerName = formData.get("player_name");
-    const creatorId = formData.get("creator_id");
+    const quizId = formData.get("quiz_id");
 
-    if (!playerName || !creatorId) {
+    if (!playerName || !quizId) {
       alert("Введите имя и выберите викторину.");
       return;
     }
 
     // Ограничение: не чаще одного раза в 10 минут
-    const key = `last_play_${creatorId}`;
+    const key = `last_play_${quizId}`;
     const now = Date.now();
     const last = localStorage.getItem(key);
     if (last && now - Number(last) < 10 * 60 * 1000) {
@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
       body: JSON.stringify({
         player_name: playerName,
-        creator_id: Number(creatorId),
+        quiz_id: Number(quizId),
         captcha_answer: captchaAnswer,
       }),
     })

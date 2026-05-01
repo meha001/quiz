@@ -4,3 +4,4 @@ python-dotenv
 pydantic-settings
 sqlalchemy
 jinja2
+python-multipart

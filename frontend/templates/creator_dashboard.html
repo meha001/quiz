@@ -11,6 +11,7 @@
 <main class="layout">
     <aside class="sidebar">
         <nav class="tabs">
+            <button class="tabs__item" data-tab="quizzes">Тесты</button>
             <button class="tabs__item tabs__item--active" data-tab="questions">Вопросы</button>
             <button class="tabs__item" data-tab="stats">Статистика</button>
             <button class="tabs__item" data-tab="settings">Настройки</button>
@@ -19,8 +20,53 @@
     </aside>
 
     <section class="content">
+        <div class="tab" id="tab-quizzes">
+            <h2 class="section-title">Тесты</h2>
+
+            <form class="form" id="quiz-form">
+                <input type="hidden" id="quiz-id">
+                <label class="form__field">
+                    <span>Название теста</span>
+                    <input type="text" id="quiz-title" placeholder="Например: История 7 класс" required>
+                </label>
+                <div class="form__actions">
+                    <button class="btn btn--primary" type="submit">Сохранить тест</button>
+                    <button class="btn btn--ghost" type="button" id="quiz-reset-btn">Очистить</button>
+                </div>
+            </form>
+
+            <section class="section">
+                <h3 class="section-title">Импорт вопросов из JSON</h3>
+                <div class="form">
+                    <label class="form__field">
+                        <span>Тест для импорта</span>
+                        <select id="import-quiz-select"></select>
+                    </label>
+                    <label class="form__field">
+                        <span>JSON файл</span>
+                        <input type="file" id="import-json-file" accept="application/json">
+                    </label>
+                    <div class="form__actions">
+                        <button class="btn btn--secondary" type="button" id="import-json-btn">Импортировать</button>
+                    </div>
+                    <p class="muted">
+                        Формат: {"questions":[{"text":"...","options":["A","B"],"correct_index":0,"time_limit":30}]}
+                    </p>
+                </div>
+            </section>
+
+            <section class="section">
+                <h3 class="section-title">Список тестов</h3>
+                <div id="quizzes-table-container" class="table-wrapper"></div>
+            </section>
+        </div>
+
         <div class="tab tab--active" id="tab-questions">
             <h2 class="section-title">Вопросы</h2>
+            <label class="form__field">
+                <span>Тест</span>
+                <select id="questions-quiz-select"></select>
+            </label>
             <form class="form" id="question-form">
                 <input type="hidden" name="id" id="q-id">
                 <label class="form__field">

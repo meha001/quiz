@@ -5,7 +5,7 @@ from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from .database import Base, engine
+from .database import Base, engine, ensure_sqlite_schema
 from .routers import auth, creator, game, stats
 
 
@@ -21,12 +21,15 @@ def create_app() -> FastAPI:
 
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
-    def template_context(request: Request) -> dict:
-        creator_logged_in = bool(request.cookies.get("creator_id"))
-        return {"creator_logged_in": creator_logged_in}
+    templates = Jinja2Templates(directory=str(templates_dir))
 
-    templates = Jinja2Templates(directory=str(templates_dir), context_processors=[template_context])
+    def base_context(request: Request) -> dict:
+        return {
+            "request": request,
+            "creator_logged_in": bool(request.cookies.get("creator_id")),
+        }
 
+    ensure_sqlite_schema()
     Base.metadata.create_all(bind=engine)
 
     app.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -36,27 +39,31 @@ def create_app() -> FastAPI:
 
     @app.get("/", response_class=HTMLResponse)
     async def index(request: Request):
-        return templates.TemplateResponse(request, "index.html")
+        return templates.TemplateResponse("index.html", base_context(request))
 
     @app.get("/player", response_class=HTMLResponse)
     async def player_page(request: Request):
-        return templates.TemplateResponse(request, "player.html")
+        return templates.TemplateResponse("player.html", base_context(request))
 
     @app.get("/creator/login", response_class=HTMLResponse)
     async def creator_login_page(request: Request):
-        return templates.TemplateResponse(request, "creator_login.html")
+        return templates.TemplateResponse("creator_login.html", base_context(request))
 
     @app.get("/creator/dashboard", response_class=HTMLResponse)
     async def creator_dashboard_page(request: Request):
-        return templates.TemplateResponse(request, "creator_dashboard.html")
+        return templates.TemplateResponse("creator_dashboard.html", base_context(request))
 
     @app.get("/game/{session_id}", response_class=HTMLResponse)
     async def game_page(request: Request, session_id: int):
-        return templates.TemplateResponse(request, "quiz.html", {"session_id": session_id})
+        ctx = base_context(request)
+        ctx["session_id"] = session_id
+        return templates.TemplateResponse("quiz.html", ctx)
 
     @app.get("/results/{session_id}", response_class=HTMLResponse)
     async def results_page(request: Request, session_id: int):
-        return templates.TemplateResponse(request, "results.html", {"session_id": session_id})
+        ctx = base_context(request)
+        ctx["session_id"] = session_id
+        return templates.TemplateResponse("results.html", ctx)
 
     # Chrome DevTools может запрашивать этот путь автоматически
     @app.get("/.well-known/appspecific/com.chrome.devtools.json")

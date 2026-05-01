@@ -5,9 +5,20 @@ document.addEventListener("DOMContentLoaded", () => {
   const logoutBtn = document.getElementById("logout-btn");
   const questionForm = document.getElementById("question-form");
   const questionsContainer = document.getElementById("questions-table-container");
+  const questionsQuizSelect = document.getElementById("questions-quiz-select");
   const statsSummary = document.getElementById("stats-summary");
   const ratingBlock = document.getElementById("rating-block");
   const settingsForm = document.getElementById("settings-form");
+  const quizForm = document.getElementById("quiz-form");
+  const quizzesContainer = document.getElementById("quizzes-table-container");
+  const quizResetBtn = document.getElementById("quiz-reset-btn");
+  const quizIdEl = document.getElementById("quiz-id");
+  const quizTitleEl = document.getElementById("quiz-title");
+  const importQuizSelect = document.getElementById("import-quiz-select");
+  const importJsonFile = document.getElementById("import-json-file");
+  const importJsonBtn = document.getElementById("import-json-btn");
+
+  let quizzesCache = [];
 
   tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -35,7 +46,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function loadQuestions() {
     if (!questionsContainer) return;
-    fetch("/creator/api/questions")
+    const quizId = questionsQuizSelect ? questionsQuizSelect.value : "";
+    const url = quizId ? `/creator/api/questions?quiz_id=${encodeURIComponent(quizId)}` : "/creator/api/questions";
+    fetch(url)
       .then((res) => res.json())
       .then((questions) => {
         if (!Array.isArray(questions) || questions.length === 0) {
@@ -126,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const id = document.getElementById("q-id").value;
 
       const payload = {
+        quiz_id: questionsQuizSelect && questionsQuizSelect.value ? Number(questionsQuizSelect.value) : null,
         text: document.getElementById("q-text").value,
         option_1: document.getElementById("q-opt1").value,
         option_2: document.getElementById("q-opt2").value,
@@ -228,5 +242,168 @@ document.addEventListener("DOMContentLoaded", () => {
   loadQuestions();
   loadSettings();
   loadStatsAndRating();
+
+  function renderQuizSelects() {
+    const opts = quizzesCache
+      .map((q) => `<option value="${q.id}">${q.title} (ID: ${q.id})</option>`)
+      .join("");
+
+    if (questionsQuizSelect) {
+      questionsQuizSelect.innerHTML = `<option value="">— выберите тест —</option>${opts}`;
+    }
+    if (importQuizSelect) {
+      importQuizSelect.innerHTML = `<option value="">— выберите тест —</option>${opts}`;
+    }
+  }
+
+  function renderQuizzesTable() {
+    if (!quizzesContainer) return;
+    if (!Array.isArray(quizzesCache) || quizzesCache.length === 0) {
+      quizzesContainer.innerHTML = '<p class="muted">Пока нет ни одного теста.</p>';
+      return;
+    }
+
+    const rows = quizzesCache
+      .map(
+        (q) => `
+        <tr data-id="${q.id}">
+          <td>${q.id}</td>
+          <td>${q.title}</td>
+          <td>
+            <button class="btn btn--ghost btn-sm" data-action="edit">Изменить</button>
+            <button class="btn btn--ghost btn-sm" data-action="delete">Удалить</button>
+          </td>
+        </tr>`,
+      )
+      .join("");
+
+    quizzesContainer.innerHTML = `
+      <table class="table">
+        <thead>
+          <tr><th>ID</th><th>Название</th><th></th></tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+
+    const tbody = quizzesContainer.querySelector("tbody");
+    if (!tbody) return;
+    tbody.addEventListener("click", (e) => {
+      const target = e.target;
+      if (!(target instanceof HTMLElement)) return;
+      const action = target.dataset.action;
+      const tr = target.closest("tr");
+      if (!tr) return;
+      const id = tr.getAttribute("data-id");
+      if (!id) return;
+      const quiz = quizzesCache.find((x) => String(x.id) === String(id));
+      if (!quiz) return;
+
+      if (action === "edit") {
+        if (quizIdEl) quizIdEl.value = String(quiz.id);
+        if (quizTitleEl) quizTitleEl.value = quiz.title;
+      } else if (action === "delete") {
+        if (!confirm("Удалить тест? Вопросы останутся, но будут отвязаны от теста.")) return;
+        fetch(`/creator/api/quizzes/${id}`, { method: "DELETE" }).then(() => {
+          loadQuizzes();
+          loadQuestions();
+        });
+      }
+    });
+  }
+
+  function loadQuizzes() {
+    fetch("/creator/api/quizzes")
+      .then((res) => res.json())
+      .then((items) => {
+        quizzesCache = Array.isArray(items) ? items : [];
+        renderQuizSelects();
+        renderQuizzesTable();
+      })
+      .catch(() => {
+        if (quizzesContainer) {
+          quizzesContainer.innerHTML = '<p class="muted">Ошибка загрузки тестов.</p>';
+        }
+      });
+  }
+
+  if (quizResetBtn) {
+    quizResetBtn.addEventListener("click", () => {
+      if (quizIdEl) quizIdEl.value = "";
+      if (quizTitleEl) quizTitleEl.value = "";
+    });
+  }
+
+  if (quizForm) {
+    quizForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const id = quizIdEl ? quizIdEl.value : "";
+      const title = quizTitleEl ? quizTitleEl.value : "";
+      if (!title.trim()) {
+        alert("Введите название теста.");
+        return;
+      }
+
+      const method = id ? "PUT" : "POST";
+      const url = id ? `/creator/api/quizzes/${id}` : "/creator/api/quizzes";
+      fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title }),
+      })
+        .then(async (res) => {
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.detail || "Ошибка сохранения теста");
+          return data;
+        })
+        .then(() => {
+          if (quizIdEl) quizIdEl.value = "";
+          if (quizTitleEl) quizTitleEl.value = "";
+          loadQuizzes();
+        })
+        .catch((err) => alert(err.message || "Ошибка сохранения теста"));
+    });
+  }
+
+  if (questionsQuizSelect) {
+    questionsQuizSelect.addEventListener("change", () => {
+      loadQuestions();
+    });
+  }
+
+  if (importJsonBtn) {
+    importJsonBtn.addEventListener("click", () => {
+      const quizId = importQuizSelect ? importQuizSelect.value : "";
+      const file = importJsonFile ? (importJsonFile.files && importJsonFile.files[0]) : null;
+      if (!quizId) {
+        alert("Выберите тест для импорта.");
+        return;
+      }
+      if (!file) {
+        alert("Выберите JSON файл.");
+        return;
+      }
+
+      const form = new FormData();
+      form.append("file", file);
+      fetch(`/creator/api/quizzes/${quizId}/import-json`, {
+        method: "POST",
+        body: form,
+      })
+        .then(async (res) => {
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.detail || "Ошибка импорта");
+          return data;
+        })
+        .then((data) => {
+          alert(`Импортировано вопросов: ${data.imported || 0}`);
+          if (importJsonFile) importJsonFile.value = "";
+          loadQuestions();
+        })
+        .catch((err) => alert(err.message || "Ошибка импорта"));
+    });
+  }
+
+  loadQuizzes();
 });
 

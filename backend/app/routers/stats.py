@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from .. import models
 from ..database import get_db
-from ..schemas import CreatorSummary, HighscoreOut
+from ..schemas import CreatorSummary, HighscoreOut, QuizOut
 
 
 router = APIRouter()
@@ -30,6 +30,12 @@ def list_creators(db: Session = Depends(get_db)):
     return summaries
 
 
+@router.get("/quizzes", response_model=list[QuizOut])
+def list_quizzes(db: Session = Depends(get_db)):
+    # публичный список тестов
+    return db.query(models.Quiz).order_by(models.Quiz.id.desc()).all()
+
+
 @router.get("/creator/me/summary", response_model=CreatorSummary)
 def my_creator_summary(
     creator_id: str | None = Cookie(default=None),
@@ -50,14 +56,14 @@ def my_creator_summary(
     )
 
 
-@router.get("/creators/{creator_id}/highscores", response_model=list[HighscoreOut])
-def highscores_for_creator(
-    creator_id: int,
+@router.get("/quizzes/{quiz_id}/highscores", response_model=list[HighscoreOut])
+def highscores_for_quiz(
+    quiz_id: int,
     period: str = Query("all", pattern="^(all|today|week)$"),
     limit: int = 10,
     db: Session = Depends(get_db),
 ):
-    qs = db.query(models.Highscore).filter(models.Highscore.creator_id == creator_id)
+    qs = db.query(models.Highscore).filter(models.Highscore.quiz_id == quiz_id)
 
     now = datetime.utcnow()
     if period == "today":

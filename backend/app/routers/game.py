@@ -27,18 +27,21 @@ def start_game(payload: GameStartRequest, request: Request, db: Session = Depend
     if payload.captcha_answer != 4:
         raise HTTPException(status_code=400, detail="Неверный ответ на проверочный пример")
 
-    creator = db.query(models.Creator).filter(models.Creator.id == payload.creator_id).first()
+    quiz = db.query(models.Quiz).filter(models.Quiz.id == payload.quiz_id).first()
+    if not quiz:
+        raise HTTPException(status_code=404, detail="Тест не найден")
+    creator = db.query(models.Creator).filter(models.Creator.id == quiz.creator_id).first()
     if not creator:
-        raise HTTPException(status_code=404, detail="Викторина не найдена")
+        raise HTTPException(status_code=404, detail="Создатель не найден")
 
     questions = (
         db.query(models.Question)
-        .filter(models.Question.creator_id == creator.id)
+        .filter(models.Question.creator_id == creator.id, models.Question.quiz_id == quiz.id)
         .order_by(models.Question.created_at)
         .all()
     )
     if not questions:
-        raise HTTPException(status_code=400, detail="У создателя пока нет вопросов")
+        raise HTTPException(status_code=400, detail="В этом тесте пока нет вопросов")
 
     settings = (
         db.query(models.QuizSettings)
@@ -57,6 +60,7 @@ def start_game(payload: GameStartRequest, request: Request, db: Session = Depend
     session = models.Session(
         player_name=payload.player_name,
         creator_id=creator.id,
+        quiz_id=quiz.id,
         total_questions=total_questions,
         ip_address=client_host,
     )
@@ -160,6 +164,7 @@ def finish_game(session_id: int, db: Session = Depends(get_db)):
             player_name=session.player_name,
             score=score,
             creator_id=session.creator_id,
+            quiz_id=session.quiz_id,
             session_id=session.id,
         )
         db.add(hs)

@@ -3,6 +3,23 @@ from typing import List, Optional
 from pydantic import BaseModel, constr
 
 
+class QuizCreate(BaseModel):
+    title: constr(min_length=1, max_length=120)
+
+
+class QuizUpdate(BaseModel):
+    title: Optional[constr(min_length=1, max_length=120)] = None
+
+
+class QuizOut(BaseModel):
+    id: int
+    title: str
+    creator_id: int
+
+    class Config:
+        from_attributes = True
+
+
 class CreatorRegister(BaseModel):
     username: constr(min_length=3, max_length=50)
     password: constr(min_length=4, max_length=100)
@@ -32,7 +49,7 @@ class QuestionBase(BaseModel):
 
 
 class QuestionCreate(QuestionBase):
-    pass
+    quiz_id: Optional[int] = None
 
 
 class QuestionUpdate(BaseModel):
@@ -43,10 +60,12 @@ class QuestionUpdate(BaseModel):
     option_4: Optional[str] = None
     correct_index: Optional[int] = None
     time_limit: Optional[int] = None
+    quiz_id: Optional[int] = None
 
 
 class QuestionOut(QuestionBase):
     id: int
+    quiz_id: Optional[int] = None
 
     class Config:
         from_attributes = True
@@ -54,7 +73,7 @@ class QuestionOut(QuestionBase):
 
 class GameStartRequest(BaseModel):
     player_name: constr(min_length=1, max_length=50)
-    creator_id: int
+    quiz_id: int
     captcha_answer: int
 
 

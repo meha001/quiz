@@ -28,6 +28,7 @@ class Creator(Base):
     rating = Column(Float, default=0.0)
 
     user = relationship("User", back_populates="creator")
+    quizzes = relationship("Quiz", back_populates="creator")
     questions = relationship("Question", back_populates="creator")
     sessions = relationship("Session", back_populates="creator")
 
@@ -44,6 +45,18 @@ class QuizSettings(Base):
     creator = relationship("Creator", backref="settings", uselist=False)
 
 
+class Quiz(Base):
+    __tablename__ = "quizzes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, nullable=False)
+    creator_id = Column(Integer, ForeignKey("creators.id"), nullable=False, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    creator = relationship("Creator", back_populates="quizzes")
+    questions = relationship("Question", back_populates="quiz")
+
+
 class Question(Base):
     __tablename__ = "questions"
 
@@ -56,9 +69,11 @@ class Question(Base):
     correct_index = Column(Integer, nullable=False)
     time_limit = Column(Integer, nullable=False, default=30)
     creator_id = Column(Integer, ForeignKey("creators.id"), nullable=False)
+    quiz_id = Column(Integer, ForeignKey("quizzes.id"), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     creator = relationship("Creator", back_populates="questions")
+    quiz = relationship("Quiz", back_populates="questions")
 
 
 class Session(Base):
@@ -67,6 +82,7 @@ class Session(Base):
     id = Column(Integer, primary_key=True, index=True)
     player_name = Column(String, nullable=False)
     creator_id = Column(Integer, ForeignKey("creators.id"), nullable=False)
+    quiz_id = Column(Integer, ForeignKey("quizzes.id"), nullable=True)
     started_at = Column(DateTime, default=datetime.utcnow)
     finished_at = Column(DateTime, nullable=True)
     correct_count = Column(Integer, default=0)
@@ -88,6 +104,7 @@ class Highscore(Base):
     score = Column(Integer, nullable=False)
     played_at = Column(DateTime, default=datetime.utcnow)
     creator_id = Column(Integer, ForeignKey("creators.id"), nullable=False)
+    quiz_id = Column(Integer, ForeignKey("quizzes.id"), nullable=True)
     session_id = Column(Integer, ForeignKey("sessions.id"), nullable=False)
 
     session = relationship("Session", back_populates="highscores")
