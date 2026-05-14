@@ -138,8 +138,15 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const id = document.getElementById("q-id").value;
 
+      const selectedQuiz =
+        questionsQuizSelect && questionsQuizSelect.value ? Number(questionsQuizSelect.value) : null;
+      if (!selectedQuiz) {
+        alert("Сначала выберите тест, к которому относится вопрос.");
+        return;
+      }
+
       const payload = {
-        quiz_id: questionsQuizSelect && questionsQuizSelect.value ? Number(questionsQuizSelect.value) : null,
+        quiz_id: selectedQuiz,
         text: document.getElementById("q-text").value,
         option_1: document.getElementById("q-opt1").value,
         option_2: document.getElementById("q-opt2").value,

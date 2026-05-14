@@ -3,22 +3,57 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("player-form");
   const quizSelect = document.getElementById("quiz-select");
   const highscoresContainer = document.getElementById("highscores-container");
+  const loadStatusEl = document.getElementById("quiz-load-status");
   if (!form) return;
+
+  function setLoadStatus(text) {
+    if (loadStatusEl) loadStatusEl.textContent = text;
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const presetQuizId = params.get("quiz");
+
+  setLoadStatus("Загрузка списка викторин…");
 
   // Подгружаем список тестов
   fetch("/stats/quizzes")
-    .then((res) => res.json())
+    .then((res) => {
+      if (!res.ok) throw new Error("bad status");
+      return res.json();
+    })
     .then((quizzes) => {
-      if (!Array.isArray(quizzes)) return;
+      quizSelect.innerHTML = "";
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "— выберите викторину —";
+      placeholder.selected = true;
+      quizSelect.appendChild(placeholder);
+
+      if (!Array.isArray(quizzes) || quizzes.length === 0) {
+        setLoadStatus(
+          "Пока нет викторин. Войдите как создатель, создайте тест и добавьте к нему вопросы.",
+        );
+        return;
+      }
+
       quizzes.forEach((q) => {
         const opt = document.createElement("option");
         opt.value = q.id;
         opt.textContent = `${q.title} (ID: ${q.id})`;
         quizSelect.appendChild(opt);
       });
+
+      if (presetQuizId) {
+        quizSelect.value = String(presetQuizId);
+        if (quizSelect.value === String(presetQuizId)) {
+          quizSelect.dispatchEvent(new Event("change"));
+        }
+      }
+
+      setLoadStatus("");
     })
     .catch(() => {
-      // тихо игнорируем
+      setLoadStatus("Не удалось загрузить список. Обновите страницу.");
     });
 
   quizSelect.addEventListener("change", () => {
@@ -28,7 +63,10 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
     fetch(`/stats/quizzes/${id}/highscores?period=all&limit=10`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("bad status");
+        return res.json();
+      })
       .then((items) => {
         if (!Array.isArray(items) || items.length === 0) {
           highscoresContainer.innerHTML = '<p class="muted">Пока нет рекордов.</p>';

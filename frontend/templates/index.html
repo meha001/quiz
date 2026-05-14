@@ -11,9 +11,13 @@
         <a class="btn btn--secondary" href="/creator/login">Я создатель</a>
     </div>
     <section class="top-quizzes">
-        <h2 class="section-title">Топ викторин</h2>
-        <p class="muted">Список пока заглушка — позже подгрузим из API.</p>
+        <h2 class="section-title">Доступные викторины</h2>
+        <div id="top-quizzes-list"></div>
     </section>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/home.js"></script>
 {% endblock %}
 

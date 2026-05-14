@@ -184,14 +184,19 @@ def create_question(
     creator: models.Creator = Depends(get_current_creator),
     db: Session = Depends(get_db),
 ):
-    if data.quiz_id is not None:
-        quiz = (
-            db.query(models.Quiz)
-            .filter(models.Quiz.id == data.quiz_id, models.Quiz.creator_id == creator.id)
-            .first()
+    if data.quiz_id is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Укажите тест (quiz_id), к которому относится вопрос",
         )
-        if not quiz:
-            raise HTTPException(status_code=404, detail="Тест не найден")
+
+    quiz = (
+        db.query(models.Quiz)
+        .filter(models.Quiz.id == data.quiz_id, models.Quiz.creator_id == creator.id)
+        .first()
+    )
+    if not quiz:
+        raise HTTPException(status_code=404, detail="Тест не найден")
 
     raw_options = [data.option_1, data.option_2, data.option_3, data.option_4]
     options: list[str] = []

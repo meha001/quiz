@@ -12,9 +12,10 @@
         </label>
         <label class="form__field">
             <span>Выберите викторину</span>
-            <select name="quiz_id" id="quiz-select">
+            <select name="quiz_id" id="quiz-select" required>
             </select>
         </label>
+        <p class="muted" id="quiz-load-status" aria-live="polite"></p>
         <button class="btn btn--primary" type="submit">Начать игру</button>
     </form>
 
