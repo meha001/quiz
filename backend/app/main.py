@@ -39,31 +39,31 @@ def create_app() -> FastAPI:
 
     @app.get("/", response_class=HTMLResponse)
     async def index(request: Request):
-        return templates.TemplateResponse("index.html", base_context(request))
+        return templates.TemplateResponse(request, "index.html", base_context(request))
 
     @app.get("/player", response_class=HTMLResponse)
     async def player_page(request: Request):
-        return templates.TemplateResponse("player.html", base_context(request))
+        return templates.TemplateResponse(request, "player.html", base_context(request))
 
     @app.get("/creator/login", response_class=HTMLResponse)
     async def creator_login_page(request: Request):
-        return templates.TemplateResponse("creator_login.html", base_context(request))
+        return templates.TemplateResponse(request, "creator_login.html", base_context(request))
 
     @app.get("/creator/dashboard", response_class=HTMLResponse)
     async def creator_dashboard_page(request: Request):
-        return templates.TemplateResponse("creator_dashboard.html", base_context(request))
+        return templates.TemplateResponse(request, "creator_dashboard.html", base_context(request))
 
     @app.get("/game/{session_id}", response_class=HTMLResponse)
     async def game_page(request: Request, session_id: int):
         ctx = base_context(request)
         ctx["session_id"] = session_id
-        return templates.TemplateResponse("quiz.html", ctx)
+        return templates.TemplateResponse(request, "quiz.html", ctx)
 
     @app.get("/results/{session_id}", response_class=HTMLResponse)
     async def results_page(request: Request, session_id: int):
         ctx = base_context(request)
         ctx["session_id"] = session_id
-        return templates.TemplateResponse("results.html", ctx)
+        return templates.TemplateResponse(request, "results.html", ctx)
 
     # Chrome DevTools может запрашивать этот путь автоматически
     @app.get("/.well-known/appspecific/com.chrome.devtools.json")
